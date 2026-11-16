@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Matheus Nunes Gonçalves · Engenheiro de Agentes de IA & Automações</title>
+<meta name="description" content="Engenheiro de Agentes de IA, Aplicações com IA e Automações com ~10 anos de bagagem em operações B2B, dados e escala de receita.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<style>
+:root{--bg:#07060f;--pink:#ff2e97;--cyan:#00e5ff;--lime:#b6ff3b;--amber:#ffb800;--violet:#8a5cff;--tx:#f4f1ff;--mut:#a9a3c7;--hue:280}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden;cursor:none}
+a,button,input{cursor:none}
+@media (hover:none){body,a,button,input{cursor:auto}.cur,.curdot{display:none}}
+canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.lead,h1,h2,h3,.type,.tag,.kpi span{text-shadow:0 0 6px #07060f,0 0 16px #07060f}
+canvas#fx{position:fixed;inset:0;z-index:60;pointer-events:none}
+.cur{position:fixed;width:340px;height:340px;border-radius:50%;pointer-events:none;z-index:1;transform:translate(-50%,-50%);background:radial-gradient(circle,hsla(var(--hue),100%,60%,.18),transparent 65%);transition:background .6s}
+.curdot{position:fixed;--mc:#b6ff3b;width:46px;height:46px;pointer-events:none;z-index:400;transform:translate(-50%,-50%);filter:drop-shadow(0 0 5px var(--mc));transition:width .15s,height .15s;
+background:linear-gradient(var(--mc),var(--mc)) 50% 0/2px 15px no-repeat,linear-gradient(var(--mc),var(--mc)) 50% 100%/2px 15px no-repeat,linear-gradient(var(--mc),var(--mc)) 0 50%/15px 2px no-repeat,linear-gradient(var(--mc),var(--mc)) 100% 50%/15px 2px no-repeat}
+.curdot:before{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--mc);border-radius:50%}
+.curdot.big{--mc:#fff;width:30px;height:30px}
+.curdot.fire{animation:recoil .18s}
+@keyframes recoil{0%{transform:translate(-50%,-50%) scale(1.7) rotate(45deg);--mc:#fff}}
+/* seleção de personagem */
+html.lock,html.lock body{overflow:hidden;height:100%}
+#select{position:fixed;inset:0;z-index:300;background:radial-gradient(circle at 50% 25%,#2a1259,#07060f 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:20px;text-align:center;transition:opacity .7s,transform .7s;overflow:auto;font-family:ui-monospace,Consolas,monospace;text-transform:uppercase;letter-spacing:.1em}
+#select:after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(#0000 0 2px,#0000002e 2px 4px)}
+#select.hide{opacity:0;transform:scale(1.2);pointer-events:none}
+.sel-title{font-size:clamp(20px,3.8vw,40px);font-weight:900;color:#fff;text-shadow:3px 3px 0 var(--pink),-3px -3px 0 var(--cyan)}
+.sel-sub{color:var(--lime);font-size:13px;animation:bl 1s steps(1) infinite}
+.row{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.choice,.charcard{background:#0d0a1f;border:4px solid var(--bc,#fff);box-shadow:6px 6px 0 var(--bc,#fff);color:#fff;font:inherit;padding:18px 16px;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:.08em}
+.choice{width:min(250px,42vw)}.choice b{font-size:clamp(14px,2vw,20px)}
+.choice:hover,.charcard:hover{transform:translate(-4px,-4px);box-shadow:10px 10px 0 var(--bc,#fff)}
+.choice:hover canvas,.charcard:hover canvas{animation:jump .5s steps(4) infinite}
+.charcard{width:min(170px,42vw);--bc:var(--cyan)}.charcard small{font-size:10px;color:var(--mut);letter-spacing:.04em;text-transform:none;min-height:26px}
+.charcard.sel{--bc:var(--lime);background:#14260a}
+.charcard.sel:after{content:"▶ SELECIONADO";font-size:10px;color:var(--lime)}
+canvas.sprite{image-rendering:pixelated;filter:drop-shadow(0 8px 0 #0008)}
+@keyframes jump{50%{transform:translateY(-12px)}}
+.startbtn{font:900 18px ui-monospace,Consolas,monospace;padding:14px 34px;background:var(--lime);color:#000;border:4px solid #fff;box-shadow:6px 6px 0 var(--pink);letter-spacing:.14em;transition:.15s}
+.startbtn[disabled]{background:#333;color:#777;border-color:#555;box-shadow:none}
+.startbtn:not([disabled]):hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--pink);animation:bl .6s steps(1) infinite}
+.back{background:none;border:0;color:var(--mut);font:inherit;text-decoration:underline}
+.avatar{overflow:hidden;background-size:100% 100%;image-rendering:pixelated}
+.avatar.sprite{background-color:#120f26;color:transparent;cursor:pointer}
+.orb.sprite{width:36px;height:45px;margin-left:-18px;border-radius:0;background-color:transparent;background-size:100% 100%;image-rendering:pixelated;box-shadow:none;filter:drop-shadow(0 0 10px var(--cyan));animation:walk .5s steps(2) infinite}
+@keyframes walk{50%{transform:translateY(-4px)}}
+/* HUD */
+.hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:14px;padding:10px 22px;background:linear-gradient(#07060fee,#07060f00);backdrop-filter:blur(6px)}
+.avatar{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--pink),var(--violet));display:grid;place-items:center;font-weight:900;box-shadow:0 0 18px var(--pink)}
+.hud .who{font-size:12px;line-height:1.2;color:var(--mut)}.hud .who b{display:block;color:#fff;font-size:14px}
+.xpwrap{flex:1;max-width:520px}.xpbar{height:10px;border-radius:9px;background:#ffffff14;overflow:hidden;border:1px solid #ffffff22}
+.xpfill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--lime),var(--amber),var(--pink));box-shadow:0 0 14px var(--lime);transition:width .15s}
+.xpinfo{display:flex;justify-content:space-between;font:700 11px ui-monospace,Consolas,monospace;color:var(--mut);margin-top:3px}
+.badge{font:700 12px ui-monospace,Consolas,monospace;padding:6px 10px;border-radius:8px;border:1px solid #ffffff2a;background:#ffffff0d}
+.badge span{color:var(--amber)}
+/* rail */
+.rail{position:fixed;left:26px;top:90px;bottom:60px;width:4px;background:#ffffff14;border-radius:4px;z-index:40}
+.railfill{position:absolute;left:0;top:0;width:100%;height:0;background:linear-gradient(var(--cyan),var(--pink));border-radius:4px;box-shadow:0 0 12px var(--cyan)}
+.orb{position:absolute;left:50%;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:#fff;box-shadow:0 0 22px 6px var(--cyan);top:0}
+.node{position:absolute;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:#1b1830;border:2px solid #ffffff44;transition:.4s}
+.node.on{background:var(--c);border-color:var(--c);box-shadow:0 0 14px var(--c)}
+@media(max-width:900px){.rail{display:none}}
+/* layout */
+section{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;padding:110px 24px 70px 80px}
+@media(max-width:900px){section{padding:100px 18px 60px}}
+.wrap{max-width:1000px;margin:auto;width:100%;position:relative}
+.bignum{position:absolute;z-index:-1;right:-10px;top:-40px;font:900 clamp(120px,22vw,300px)/1 ui-monospace,Consolas,monospace;color:transparent;-webkit-text-stroke:2px var(--c,#fff);opacity:.12;pointer-events:none;will-change:transform}
+.tag{display:inline-block;font:800 12px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:var(--c);padding:6px 12px;border:1px solid var(--c);border-radius:99px;box-shadow:0 0 18px color-mix(in srgb,var(--c) 40%,transparent);margin-bottom:16px}
+h1{font-size:clamp(40px,7.4vw,92px);line-height:1.02;font-weight:900;letter-spacing:-.03em}
+h2{font-size:clamp(36px,6vw,72px);line-height:1;font-weight:900;letter-spacing:-.03em;color:#fff;text-shadow:0 0 40px color-mix(in srgb,var(--c) 55%,transparent)}
+h3{font-size:clamp(16px,2.2vw,22px);color:var(--c);margin:8px 0 16px;font-weight:700}
+.grad{background:linear-gradient(90deg,var(--cyan),var(--lime),var(--amber),var(--pink),var(--violet),var(--cyan));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 18px #00e5ff44);animation:flow 6s linear infinite}
+@keyframes flow{to{background-position:300% 0}}
+.lead{color:var(--mut);font-size:clamp(15px,1.7vw,19px);line-height:1.6;max-width:720px}
+.type{font:700 clamp(15px,2vw,22px) ui-monospace,Consolas,monospace;color:var(--lime);margin:22px 0;min-height:1.6em}.type:after{content:"▌";animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:26px 0}
+.kpi{padding:16px;border-radius:16px;background:#0f0c20;border:1px solid #ffffff1c;transition:.3s}
+.kpi:hover{transform:translateY(-6px) scale(1.03);border-color:var(--c,var(--cyan));box-shadow:0 10px 40px color-mix(in srgb,var(--c,var(--cyan)) 35%,transparent)}
+.kpi b{display:block;font:900 clamp(30px,4vw,46px) ui-monospace,Consolas,monospace;color:var(--c,var(--cyan))}.kpi span{font-size:13px;color:var(--mut)}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.btn{display:inline-flex;gap:8px;align-items:center;padding:13px 22px;border-radius:12px;font-weight:800;text-decoration:none;color:#000;background:var(--lime);border:0;font-size:15px;box-shadow:0 0 24px #b6ff3b66;transition:.25s;position:relative;overflow:hidden}
+.btn:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:0 0 44px var(--lime)}
+.btn.alt{background:transparent;color:#fff;border:2px solid var(--cyan);box-shadow:0 0 20px #00e5ff44}
+.btn.alt:hover{background:var(--cyan);color:#000}
+.scrollhint{position:absolute;bottom:26px;left:50%;font:700 12px ui-monospace,monospace;color:var(--mut);animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(8px)}}
+/* cards */
+.card{--rx:0deg;--ry:0deg;position:relative;margin-top:22px;padding:24px;border-radius:20px;background:linear-gradient(145deg,#181433,#0d0b1e);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .15s,box-shadow .3s;box-shadow:0 0 0 transparent}
+.card:hover{box-shadow:0 20px 60px color-mix(in srgb,var(--c) 30%,transparent)}
+.card:before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--c) 28%,transparent),transparent 60%);opacity:0;transition:.3s;pointer-events:none}
+.card:hover:before{opacity:1}
+.card>*{position:relative;z-index:1}
+.unlock{font:800 14px system-ui;background:var(--c);color:#000;border:0;border-radius:10px;padding:11px 16px;transition:.2s}
+.unlock:hover{transform:scale(1.06)}.unlock[disabled]{background:#ffffff1a;color:var(--mut);transform:none}
+.loot{list-style:none;padding:0;margin-top:16px;display:grid;gap:10px}
+.loot li{padding:12px 14px 12px 42px;border-radius:12px;background:#120f26;border:1px dashed #ffffff2a;color:var(--mut);position:relative;line-height:1.5;filter:blur(7px);opacity:.35;transform:translateX(-20px);transition:.5s}
+.loot li:before{content:"🔒";position:absolute;left:12px}
+.loot li.open{filter:none;opacity:1;transform:none;color:#fff;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:color-mix(in srgb,var(--c) 14%,#0d0b1e)}
+.loot li.open:before{content:"🏆"}
+.reveal{opacity:0;transform:translateY(46px) scale(.97);transition:opacity .8s,transform .8s cubic-bezier(.2,.9,.3,1.2)}
+.reveal.in{opacity:1;transform:none}
+/* skill tree */
+.tree{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:26px}
+.branch{padding:18px;border-radius:18px;border:1px solid #ffffff1c;background:#0d0b1e}
+.branch h4{color:var(--bc);font-size:15px;letter-spacing:.08em;margin-bottom:12px}
+.skill{display:block;width:100%;text-align:left;margin:7px 0;padding:10px 12px;border-radius:10px;border:1px solid color-mix(in srgb,var(--bc) 40%,transparent);background:transparent;color:#fff;font:600 14px system-ui;position:relative;transition:.25s}
+.skill:hover{background:var(--bc);color:#000;transform:translateX(8px);box-shadow:0 0 22px var(--bc)}
+.skill small{display:block;font-weight:400;opacity:0;max-height:0;overflow:hidden;transition:.3s}
+.skill:hover small{opacity:.9;max-height:60px;margin-top:4px}
+.branch.locked .skill{border-style:dashed;color:var(--mut)}.branch.locked .skill:before{content:"🔒 "}
+.branch.locked .skill.on:before{content:"⚡ "}
+/* boss */
+.hp{height:22px;border-radius:12px;background:#ffffff14;border:1px solid #ffffff33;overflow:hidden;margin:14px 0 4px}
+.hpfill{height:100%;width:100%;background:linear-gradient(90deg,#ff2e97,#ff7a18);box-shadow:0 0 18px var(--pink);transition:width .6s cubic-bezier(.2,.9,.3,1.3)}
+.boss{font:800 13px ui-monospace,monospace;color:var(--pink);letter-spacing:.1em}
+.powers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:20px}
+.power{padding:18px;border-radius:16px;border:2px solid #ffffff2a;background:#0f0c20;color:#fff;text-align:left;font:inherit;transition:.25s}
+.power:hover{transform:translateY(-8px) rotate(-1deg);border-color:var(--lime);box-shadow:0 12px 40px #b6ff3b44}
+.power b{display:block;color:var(--lime);margin-bottom:6px}.power span{font-size:14px;color:var(--mut);line-height:1.5}
+.power.hit{border-color:var(--pink);background:#ff2e9714;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.win{display:none;margin-top:28px;padding:26px;border-radius:20px;border:2px solid var(--lime);background:#b6ff3b12;box-shadow:0 0 60px #b6ff3b44}
+.win.show{display:block;animation:pop .6s cubic-bezier(.2,1.4,.4,1)}@keyframes pop{from{transform:scale(.8);opacity:0}}
+.win h2{font-size:clamp(28px,4.5vw,50px)}
+/* toast + terminal */
+.toasts{position:fixed;right:18px;top:78px;z-index:80;display:grid;gap:10px}
+.toast{padding:12px 16px;border-radius:12px;background:#120f26;border:1px solid var(--amber);box-shadow:0 0 26px #ffb80055;font-size:14px;animation:tin .5s cubic-bezier(.2,1.4,.4,1),tout .5s 3.2s forwards;max-width:300px}
+.toast b{color:var(--amber)}@keyframes tin{from{transform:translateX(120%)}}@keyframes tout{to{transform:translateX(130%);opacity:0}}
+.tbtn{position:fixed;right:18px;bottom:18px;z-index:75;font:800 13px ui-monospace,monospace;color:var(--lime);background:#0b0a18;border:1px solid var(--lime);border-radius:10px;padding:10px 14px;box-shadow:0 0 20px #b6ff3b44}
+.term{position:fixed;right:18px;bottom:64px;width:min(440px,92vw);height:300px;z-index:75;background:#05040cee;border:1px solid var(--lime);border-radius:14px;display:none;flex-direction:column;font:13px ui-monospace,Consolas,monospace;box-shadow:0 0 50px #b6ff3b33;backdrop-filter:blur(8px)}
+.term.show{display:flex}.tout{flex:1;overflow:auto;padding:12px;color:#d6ffb0;white-space:pre-wrap;line-height:1.5}
+.term form{display:flex;border-top:1px solid #b6ff3b44}.term span{padding:10px 0 10px 12px;color:var(--lime)}
+.term input{flex:1;background:none;border:0;outline:0;color:#fff;font:inherit;padding:10px}
+footer{position:relative;z-index:2;text-align:center;padding:30px;color:var(--mut);font-size:13px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="select">
+  <div style="display:grid;gap:10px;justify-items:center"><canvas class="sprite" id="namecv" style="max-width:88vw;height:auto"></canvas><div class="sel-sub" style="animation:none;color:var(--mut);letter-spacing:.2em;font-size:11px">CURRÍCULO INTERATIVO · AGENTES DE IA · APLICAÇÕES & AUTOMAÇÕES</div></div>
+  <div id="step1">
+    <div class="sel-title">🎮 Novo jogo</div>
+    <p class="sel-sub" style="margin:14px 0 22px">Quem está jogando?</p>
+    <div class="row">
+      <button class="choice" data-g="m" style="--bc:var(--cyan)"><canvas class="sprite" id="pm"></canvas><b>Recrutador</b></button>
+      <button class="choice" data-g="f" style="--bc:var(--pink)"><canvas class="sprite" id="pf"></canvas><b>Recrutadora</b></button>
+    </div>
+  </div>
+  <div id="step2" style="display:none">
+    <div class="sel-title">Escolha seu personagem</div>
+    <p class="sel-sub" style="margin:14px 0 22px" id="selsub">Clique em um jogador</p>
+    <div class="row" id="chars"></div>
+    <div style="margin-top:26px;display:grid;gap:14px;justify-items:center">
+      <button class="startbtn" id="startbtn" disabled>▶ START</button>
+      <button class="back" id="backbtn">← voltar</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="bg"></canvas><canvas id="fx"></canvas>
+<div class="cur" id="cur"></div><div class="curdot" id="dot"></div>
+
+<header class="hud">
+  <div class="avatar" id="avatar" title="Trocar personagem">MN</div>
+  <div class="who"><b id="pname">Matheus Nunes</b><span id="quest">Press Start</span></div>
+  <div class="xpwrap"><div class="xpbar"><div class="xpfill" id="xp"></div></div>
+    <div class="xpinfo"><span id="lvl">LV 1</span><span id="xpt">0 XP</span></div></div>
+  <div class="badge">🏆 <span id="ach">0</span>/7</div>
+  <div class="badge">👾 <span id="kills">0</span></div>
+</header>
+<div class="rail" id="rail"><div class="railfill" id="railfill"></div><div class="orb" id="orb"></div></div>
+<div class="toasts" id="toasts"></div>
+
+<!-- LEVEL 0 · HERO -->
+<section id="hero" data-title="Press Start" style="--c:var(--cyan)">
+  <div class="wrap">
+    <div class="tag">PLAYER 1 · ENGENHEIRO DE AGENTES DE IA & AUTOMAÇÕES</div>
+    <h1>Construo <span class="grad">Agentes de IA</span> e <span class="grad">Automações</span> que geram receita.</h1>
+    <div class="type" id="type"></div>
+    <p class="lead">Domínio prático na construção de <b style="color:#fff">Agentes de IA, Aplicações com IA e Automações</b>, somado a ~10 anos escalando operações B2B, dados e integrações. Eu uno código, fluxos inteligentes e visão de negócio para colocar IA em produção com ROI real.</p>
+    <div class="kpis">
+      <div class="kpi" style="--c:var(--cyan)"><b data-count="114" data-suffix="h">0</b><span>formações intensivas em Agentes de IA & IA Design</span></div>
+      <div class="kpi" style="--c:var(--lime)"><b data-count="70" data-suffix="%">0</b><span>do faturamento BR sustentado por dados & automação (Tul)</span></div>
+      <div class="kpi" style="--c:var(--amber)"><b data-count="120" data-suffix="%">0</b><span>média de atingimento de metas com processos otimizados</span></div>
+      <div class="kpi" style="--c:var(--pink)"><b data-count="6000" data-suffix="+">0</b><span>disparos/semana em fluxos automatizados</span></div>
+    </div>
+    <div class="btns"><a class="btn" href="#lv1">▶ Começar jornada</a></div>
+  </div>
+  <div class="scrollhint">ROLE ↓</div>
+</section>
+
+<main id="levels"></main>
+
+<!-- BOSS + CONTATO -->
+<section id="boss" data-title="Boss Final" style="--c:var(--pink)">
+  <div class="wrap reveal">
+    <div class="bignum">★</div>
+    <div class="tag">BOSS FINAL · IMPACTO EM PRODUÇÃO</div>
+    <h2>“Precisamos de IA que funcione na prática e traga resultado.”</h2>
+    <p class="lead">O maior desafio das empresas hoje. Clique nos meus 4 pilares para derrotar esse Boss.</p>
+    <div class="boss" id="bosslbl">👾 DESAFIO DO RECRUTADOR</div>
+    <div class="hp"><div class="hpfill" id="hp"></div></div>
+    <div class="xpinfo" style="max-width:300px"><span id="hpt">HP 100%</span><span>4 golpes</span></div>
+    <div class="powers" id="powers"></div>
+    <div class="win" id="win">
+      <div class="tag" style="--c:var(--lime)">DESAFIO SUPERADO</div>
+      <h2><span class="grad">Vamos construir juntos?</span></h2>
+      <p class="lead" id="thanks" style="color:var(--lime);margin-bottom:10px"></p>
+      <p class="lead">Eu construo <b style="color:#fff">Agentes de IA, Aplicações com IA e Automações</b> já conectados à dor real da operação, às métricas e ao faturamento. Pronto para atuar como <b style="color:#fff">Analista de IA, Engenheiro de IA ou Especialista em Automações & Agentes</b>.</p>
+      <div class="btns">
+        <a class="btn" href="mailto:matheus.ng@hotmail.com?subject=Oportunidade%20em%20IA%20-%20vi%20seu%20curr%C3%ADculo">✉ Enviar e-mail</a>
+        <a class="btn alt" href="https://www.linkedin.com/in/matheusnunesgoncalves/" target="_blank" rel="noopener">in LinkedIn</a>
+        <a class="btn alt" href="curriculo.pdf" download>⬇ Currículo PDF</a>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>© Matheus Nunes Gonçalves · feito com muito café e um pouco de automação · dica: abra o terminal 👉</footer>
+
+<button class="tbtn" id="tbtn">&gt;_ terminal</button>
+<div class="term" id="term"><div class="tout" id="tout"></div><form id="tform"><span>$</span><input id="tin" autocomplete="off" spellcheck="false" placeholder="digite help"></form></div>
+
+<script>
+/* ================= DADOS (edite aqui) ================= */
+const EMAIL='matheus.ng@hotmail.com';
+const LEVELS=[
+ {n:1,c:'--amber',when:'MAI 2022 — MAI 2023',title:'Oico',role:'Automação de Engajamento, Inside Sales & CS · São Paulo',
+  lead:'Automação em escala aplicada à operação B2B: implementei fluxos automatizados de mensagens e inteligência de carteira para escalar retenção, reengajamento e aquisição com redução de CAC.',
+  kpis:[['6000','mensagens/semana em fluxo automatizado','+'],['↓','churn e CAC com automação de funil','']],
+  loot:['Implementou o sistema de mensagens automatizadas via WhatsApp, orquestrando mais de 6 mil disparos semanais focados em reengajamento e retenção.','Estruturou o onboarding e a saúde da carteira B2B de alto volume (atacado), elevando o mix de produtos (upsell) com gatilhos operacionais.','Coordenou a frente de aquisição com consultores autônomos, reduzindo estrategicamente o CAC.','Conquistou o recorde de clientes ativos e recorrentes da operação, com queda comprovada de churn.']},
+ {n:2,c:'--cyan',when:'JUN 2023 — AGO 2025',title:'Tul Brasil',role:'Operações, Automação Comercial, Dados & Inside Sales · São Paulo',
+  lead:'Primeiro integrante da operação BR: além de liderar quase 70% da receita, estruturei a inteligência da operação com automações, integrações entre sistemas, modelagem RFM e dashboards em tempo real.',
+  kpis:[['70','do faturamento BR apoiado por dados & automação','%'],['120','média de atingimento de metas','%']],
+  loot:['Implementou ferramentas de automação de mensagens e integrações entre sistemas da stack comercial, eliminando trabalho manual e acelerando o ciclo.','Criou dashboards e pipelines de análise (Power BI, Metabase, Data Studio) para guiar decisões de operação e performance.','Desenhou e aplicou a inteligência de segmentação de carteiras por matriz RFM (Recência, Frequência e Valor).','Sustentou quase 70% do faturamento total da operação BR e média de 120% de meta desde o início, apoiando a expansão de Inside Sales LATAM.']},
+ {n:3,c:'--pink',when:'OUT 2025 — JUN 2026',title:'Head Office.ai',role:'Soluções de IA Enterprise · Implantação, ROI & Expansão · São Paulo',
+  lead:'Atuação direta com soluções de Inteligência Artificial em produção para grandes corporações: desenho de caso de uso, entrega de ROI, controle de qualidade (QC) dos agentes/soluções e evolução contínua.',
+  kpis:[['3','verticais de IA: Vendas, Financeiro, Logística',''],['Enterprise','Votorantim Cimentos · Cacau Show · Paschoalotto','']],
+  loot:['Conduziu a adoção e expansão de soluções de Inteligência Artificial com foco em ROI real nas verticais de Vendas, Financeiro e Logística.','Liderou o Quality Control (QC), retenção e sucesso técnico-estratégico das soluções de IA em contas Enterprise como Votorantim Cimentos, Cacau Show e Paschoalotto.','Garantiu o alinhamento entre a engenharia das soluções de IA e as metas de negócio dos clientes, promovendo melhoria contínua de performance.']}
+];
+const COURSES=[
+ '🤖 Engenheiro de Agentes de IA (102h · Concluído)',
+ '🎨 IA Designer (12h · Concluído)',
+ '⚡ Automações com IA',
+ 'HubSpot Sales Software Certificate',
+ 'Sales Development Outbound',
+ 'Sales & Marketing LinkedIn'
+];
+const TREE=[
+ {t:'AGENTES & APLICAÇÕES DE IA',c:'--lime',s:[
+  ['Engenharia de Agentes de IA (102h)','Arquitetura de agentes autônomos, memória, tools e orquestração multi-etapas'],
+  ['Aplicações com IA & LLMs','Construção de apps com IA, engenharia de prompt avançada, RAG e consumo de APIs'],
+  ['IA Designer (12h)','Design de fluxos conversacionais, experiência do usuário com IA e prototipação rápida'],
+  ['Case Autoral: VagaRadar','Aplicação completa em Node.js + SQLite + IMAP: agrega APIs, filtra, pontua compatibilidade e gera abordagens']
+ ]},
+ {t:'AUTOMAÇÃO & INTEGRAÇÕES',c:'--cyan',s:[
+  ['Automação de Processos & Workflows','Desenho e implementação de fluxos ponta a ponta que substituem tarefas manuais'],
+  ['Integração de Sistemas & APIs','Conexão entre CRM, mensageria, bancos de dados e ferramentas de IA'],
+  ['Mensageria em Alta Escala','Operação real de +6.000 mensagens/semana automatizadas via WhatsApp'],
+  ['Stack Comercial & Operacional','HubSpot, CRMs, funis automatizados, gatilhos e qualificação inteligente']
+ ]},
+ {t:'DADOS & BUSINESS INTELLIGENCE',c:'--amber',s:[
+  ['Dashboards & Visualização','Power BI · Metabase · Looker Studio / Data Studio'],
+  ['Modelagem RFM & Segmentação','Clusterização de carteira e priorização orientada a dados'],
+  ['Análise de Performance & Funil','Diagnóstico de gargalos, conversão, CAC, LTV e retenção']
+ ]},
+ {t:'VISÃO DE NEGÓCIO & ENTERPRISE',c:'--pink',s:[
+  ['Discovery de Casos de Uso de IA','Mapeamento de dores reais e tradução em requisitos técnicos com ROI claro'],
+  ['Quality Control de IA em Produção','Monitoramento de qualidade, aderência e evolução de soluções em contas Enterprise'],
+  ['Implantação & Adoção B2B','Experiência real com Votorantim Cimentos, Cacau Show e Paschoalotto']
+ ]}
+];
+const POWERS=[
+ ['🤖 Engenharia de Agentes de IA','Formação sólida (102h) + prática construindo agentes, prompts estruturados, uso de ferramentas e fluxos inteligentes.'],
+ ['⚙️ Aplicações com IA & Automações','Construo aplicações completas, integro APIs/CRMs e automatizo processos reais (como +6 mil disparos/semana e o app VagaRadar).'],
+ ['📊 Dados, BI e Controle de Qualidade','Power BI, Metabase, RFM e Quality Control de IA: meço acurácia, performance e impacto financeiro de cada automação.'],
+ ['🏢 Experiência Real em IA Enterprise','Atuei na Head Office.ai com contas como Votorantim, Cacau Show e Paschoalotto — sei o que faz uma IA dar ROI de verdade.']
+];
+/* ================= RENDER ================= */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const lv=$('#levels');
+LEVELS.forEach(L=>{
+ const id='lv'+L.n;
+ lv.insertAdjacentHTML('beforeend',`<section id="${id}" data-title="${L.title}" style="--c:var(${L.c})"><div class="wrap reveal">
+  <div class="bignum" data-par>0${L.n}</div><div class="tag">LEVEL 0${L.n} · ${L.when}</div>
+  <h2>${L.title}</h2><h3>${L.role}</h3><p class="lead">${L.lead}</p>
+  <div class="kpis">${L.kpis.map(k=>{const num=/^\d+$/.test(k[0]);return `<div class="kpi"><b ${num?`data-count="${k[0]}" data-suffix="${k[2]}"`:''}>${num?0:k[0]}</b><span>${k[1]}</span></div>`}).join('')}</div>
+  <div class="card tilt"><button class="unlock">🔓 Desbloquear conquistas (+100 XP)</button>
+   <ul class="loot">${L.loot.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+  ${L.n===3?`<div class="card tilt"><b style="color:var(--c)">🎓 Formações em IA & Certificações Concluídas</b><div class="btns" style="margin-top:12px">${COURSES.map((c,i)=>`<span class="badge" style="${i<2?'border-color:var(--lime);color:#fff;background:#b6ff3b18':''}">${c}</span>`).join('')}</div></div>`:''}
+ </div></section>`);
+});
+lv.insertAdjacentHTML('beforeend',`<section id="lv4" data-title="Skill Tree" style="--c:var(--lime)"><div class="wrap reveal"><div class="bignum" data-par>04</div>
+ <div class="tag">LEVEL 04 · SKILL TREE</div><h2>Domínio Técnico & Negócios</h2><h3>Passe o mouse nas competências para ver a aplicação prática</h3>
+ <p class="lead">Uma combinação completa entre engenharia de Agentes de IA, construção de aplicações, automações em escala e inteligência de dados.</p>
+ <div class="tree">${TREE.map(b=>`<div class="branch" style="--bc:var(${b.c})"><h4>${b.t}</h4>${b.s.map(s=>`<button class="skill">${s[0]}<small>${s[1]}</small></button>`).join('')}</div>`).join('')}</div></div></section>`);
+$('#powers').innerHTML=POWERS.map(p=>`<button class="power"><b>${p[0]}</b><span>${p[1]}</span></button>`).join('');
+/* trilho com nós */
+const secs=$$('section[data-title]');
+const rail=$('#rail');
+secs.forEach((s,i)=>{const n=document.createElement('div');n.className='node';n.style.top=(i/(secs.length-1)*100)+'%';n.style.setProperty('--c',getComputedStyle(s).getPropertyValue('--c')||'#fff');n.dataset.i=i;rail.appendChild(n)});
+/* ================= ESTADO / XP / CONQUISTAS ================= */
+let bonus=0;const got=new Set();
+const ACH={start:['Primeiro contato','Começou a jornada'],half:['Explorador','Chegou na metade da trajetória'],tilt:['Cinéfilo','Brincou com os cards 3D'],loot:['Caçador de loot','Desbloqueou todas as conquistas'],hack:['Hacker','Usou o terminal'],boss:['Boss derrotado','Venceu a objeção final'],alien:['Caçador de aliens','Eliminou uma onda inteira de naves']};
+function toast(h){const t=document.createElement('div');t.className='toast';t.innerHTML=h;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),3800)}
+function unlock(k){if(got.has(k))return;got.add(k);bonus+=150;$('#ach').textContent=got.size;toast(`🏆 <b>${ACH[k][0]}</b><br>${ACH[k][1]} (+150 XP)`);burst(innerWidth-60,90,24)}
+/* typing */
+const phrases=['Engenheiro de Agentes de IA (102h)','Aplicações com IA · LLMs · Automações','IA Designer · Fluxos & Integrações','IA em Produção com ROI Enterprise'];
+let pi=0,ci=0,del=0;(function tick(){const el=$('#type'),p=phrases[pi];
+ if(!del){ci++;el.textContent=p.slice(0,ci);if(ci===p.length){del=1;return setTimeout(tick,1400)}}else{ci--;el.textContent=p.slice(0,ci);if(!ci){del=0;pi=(pi+1)%phrases.length}}
+ setTimeout(tick,del?25:55)})();
+/* count-up */
+function count(el){const to=+el.dataset.count,suf=el.dataset.suffix||'',pre=el.dataset.prefix||'',t0=performance.now();
+ (function f(t){const k=Math.min(1,(t-t0)/1400),e=1-Math.pow(1-k,3);el.textContent=pre+Math.round(to*e).toLocaleString('pt-BR')+suf;if(k<1)requestAnimationFrame(f)})(t0)}
+/* reveal + contadores */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');e.target.querySelectorAll('[data-count]').forEach(c=>{if(!c.dataset.done){c.dataset.done=1;count(c)}})}}),{threshold:.2});
+$$('.reveal').forEach(r=>io.observe(r));$$('#hero [data-count]').forEach(c=>{c.dataset.done=1});
+function heroCounts(){$$('#hero [data-count]').forEach(c=>setTimeout(()=>count(c),400))}
+/* loot */
+let opened=0;
+$$('.unlock').forEach(b=>b.onclick=()=>{b.disabled=true;b.textContent='✅ Conquistas desbloqueadas';bonus+=100;
+ const items=b.parentElement.querySelectorAll('.loot li');items.forEach((li,i)=>setTimeout(()=>{li.classList.add('open');const r=li.getBoundingClientRect();burst(r.left+40,r.top+20,10)},i*260));
+ toast('⚡ <b>+100 XP</b> conquistas desbloqueadas');if(++opened===LEVELS.length)unlock('loot')});
+/* tilt 3D */
+let tilts=new Set();
+$$('.tilt').forEach(c=>{c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+ c.style.setProperty('--ry',((x-.5)*10)+'deg');c.style.setProperty('--rx',((.5-y)*10)+'deg');c.style.setProperty('--mx',x*100+'%');c.style.setProperty('--my',y*100+'%');
+ tilts.add(c);if(tilts.size>=4)unlock('tilt')});c.addEventListener('mouseleave',()=>{c.style.setProperty('--rx','0deg');c.style.setProperty('--ry','0deg')})});
+/* boss */
+let hp=4;const hit=new Set();
+$$('.power').forEach((p,i)=>p.addEventListener('click',e=>{if(hit.has(i))return;hit.add(i);p.classList.add('hit');hp--;
+ $('#hp').style.width=(hp*25)+'%';$('#hpt').textContent='HP '+(hp*25)+'%';burst(e.clientX,e.clientY,40);toast('💥 <b>Golpe crítico!</b> '+POWERS[i][0]);bonus+=50;
+ if(!hp){setTimeout(()=>{$('#win').classList.add('show');unlock('boss');burst(innerWidth/2,innerHeight/2,160);$('#win').scrollIntoView({behavior:'smooth',block:'center'})},500)}}));
+/* ================= SCROLL ================= */
+const xpEl=$('#xp'),orb=$('#orb'),rf=$('#railfill');
+let cur=0;
+function onScroll(){
+ const max=document.documentElement.scrollHeight-innerHeight,p=max>0?scrollY/max:0;
+ const xp=Math.round(p*1000)+bonus;
+ xpEl.style.width=Math.min(100,xp/12)+'%';$('#xpt').textContent=xp+' XP';
+ const lvl=1+Math.floor(xp/150);$('#lvl').textContent='LV '+lvl;
+ const h=rail.clientHeight,oh=orb.offsetHeight/2;orb.style.top=(p*h-oh)+'px';rf.style.height=(p*h)+'px';
+ let idx=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<innerHeight*.5)idx=i});
+ if(idx!==cur||!$('.node.on')){cur=idx}
+ $$('.node').forEach((n,i)=>n.classList.toggle('on',i<=idx));
+ $('#quest').textContent=secs[idx].dataset.title;
+ const hue={0:190,1:42,2:185,3:330,4:85,5:330}[idx]??280;document.documentElement.style.setProperty('--hue',hue);
+ $$('[data-par]').forEach(b=>{const r=b.parentElement.getBoundingClientRect();b.style.transform=`translateY(${(r.top-innerHeight/2)*-.12}px)`});
+ if(scrollY>40)unlock('start');if(p>.5)unlock('half');
+}
+addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+/* ================= CURSOR + PARTÍCULAS ================= */
+const mouse={x:innerWidth/2,y:innerHeight/2},cur0=$('#cur'),dot=$('#dot');
+addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;cur0.style.left=e.clientX+'px';cur0.style.top=e.clientY+'px';dot.style.left=e.clientX+'px';dot.style.top=e.clientY+'px'});
+document.addEventListener('mouseover',e=>dot.classList.toggle('big',!!e.target.closest('a,button,.card,.kpi')));
+const bg=$('#bg'),bx=bg.getContext('2d'),fx=$('#fx'),fc=fx.getContext('2d');let W,H;
+function size(){W=bg.width=fx.width=innerWidth;H=bg.height=fx.height=innerHeight}
+size();addEventListener('resize',size);
+/* ---------- naves alienígenas (pixel art) ---------- */
+const UFO=['....GGG....','..GGGGGGG..','.GGEGGGEGG.','BBBBBBBBBBB','BLBBLBBLBBL','.BBBBBBBBB.','..B.....B..'];
+const SC=4,AW=11*SC,AH=UFO.length*SC;
+const ALIEN_COLORS=['#ff2e97','#00e5ff','#b6ff3b','#ffb800','#8a5cff'];
+const mixW=(hex,k)=>{const n=parseInt(hex.slice(1),16),f=v=>Math.round(v+(255-v)*k);return `rgb(${f(n>>16)},${f((n>>8)&255)},${f(n&255)})`};
+const ufoCache={};
+function ufoSprite(c){if(ufoCache[c])return ufoCache[c];const cv=document.createElement('canvas');cv.width=AW;cv.height=AH;const x=cv.getContext('2d');
+ const col={G:mixW(c,.55),B:c,L:'#fff6a0',E:'#1a1a2e'};
+ UFO.forEach((r,y)=>[...r].forEach((ch,i)=>{if(ch==='.')return;x.fillStyle=col[ch];x.fillRect(i*SC,y*SC,SC,SC)}));return ufoCache[c]=cv}
+const aliens=[],bolts=[],rings=[],parts=[];
+let kills=0,wave=0,rects=[],waveTimer=0;
+/* blocos de conteúdo que as naves nunca podem cobrir */
+const OB='.card,.kpi,.branch,.power,.win,.lead,h1,h2,h3,.tag,.type,.btns,.boss,.hp,.xpinfo,.hud,.rail,.tbtn,.term.show,.toast,.scrollhint';
+function collect(){rects=[];document.querySelectorAll(OB).forEach(el=>{const r=el.getBoundingClientRect();
+ if(r.width>0&&r.height>0&&r.bottom>-20&&r.top<H+20)rects.push({l:r.left-8,r:r.right+8,t:r.top-8,b:r.bottom+8})})}
+const hits=(x,y)=>rects.some(r=>x+AW/2>r.l&&x-AW/2<r.r&&y+AH/2>r.t&&y-AH/2<r.b);
+function freeSpot(){for(let k=0;k<80;k++){const x=90+Math.random()*(W-150),y=80+Math.random()*(H-130);if(!hits(x,y))return{x,y}}return null}
+function spawn(n){collect();for(let i=0;i<n;i++){const s=freeSpot()||{x:90+Math.random()*(W-150),y:100+Math.random()*(H-150)};
+ const sp=(35+Math.random()*45)*(1+wave*.1),a=Math.random()*6.28;
+ aliens.push({x:s.x,y:s.y,vx:Math.cos(a)*sp||30,vy:Math.sin(a)*sp*.6,c:ALIEN_COLORS[i%5],ph:Math.random()*6.28,al:0,stuck:0,dying:false})}}
+function nextWave(){wave++;waveTimer=0;spawn(Math.min(6+wave,13));if(wave>1)toast(`👾 <b>Onda ${wave}</b><br>Mais naves chegando!`)}
+nextWave();
+/* ---------- explosões e confete ---------- */
+function burst(x,y,n){for(let i=0;i<n;i++){const a=Math.random()*6.28,s=2+Math.random()*7;parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2,l:1,d:.014,g:.18,s:6,c:['#ff2e97','#00e5ff','#b6ff3b','#ffb800','#8a5cff'][i%5]})}}
+function explode(a){
+ for(let i=0;i<34;i++){const an=Math.random()*6.28,s=1.5+Math.random()*6;parts.push({x:a.x,y:a.y,vx:Math.cos(an)*s,vy:Math.sin(an)*s,l:1,d:.022,g:.08,s:4+Math.random()*5,c:[a.c,'#fff','#ffb800',a.c][i%4]})}
+ rings.push({x:a.x,y:a.y,r:6,l:1,c:a.c,g:0});
+ kills++;$('#kills').textContent=kills;bonus+=20;
+}
+/* ---------- arma: tiro a partir da base da tela até a mira ---------- */
+function shoot(x,y){
+ dot.classList.remove('fire');void dot.offsetWidth;dot.classList.add('fire');
+ let tgt=null,best=1e9;
+ for(const a of aliens){if(a.dying)continue;const dx=Math.abs(a.x-x),dy=Math.abs(a.y-y);
+  if(dx<AW/2+8&&dy<AH/2+8&&dx+dy<best){best=dx+dy;tgt=a}}
+ if(tgt)tgt.dying=true;
+ bolts.push({ox:W/2,oy:H+10,x,y,t:0,tgt});
+ rings.push({x:W/2,y:H-6,r:4,l:1,c:'#b6ff3b',g:1});
+}
+addEventListener('mousedown',e=>{if(!started||e.button!==0||e.target.closest('a,button,input,.term'))return;shoot(e.clientX,e.clientY)});
+/* ---------- loop ---------- */
+let last=performance.now(),fr=0;
+function draw(now){
+ const dt=Math.min(.05,(now-last)/1000);last=now;const t=now/1000;
+ if(fr++%5===0)collect();
+ bx.clearRect(0,0,W,H);fc.clearRect(0,0,W,H);
+ for(const a of aliens){
+  if(!a.dying){
+   a.x+=a.vx*dt;a.y+=a.vy*dt+Math.sin(t*1.6+a.ph)*.35;
+   if(a.x<AW/2+60){a.x=AW/2+60;a.vx=Math.abs(a.vx)}
+   if(a.x>W-AW/2){a.x=W-AW/2;a.vx=-Math.abs(a.vx)}
+   if(a.y>H-AH/2){a.y=H-AH/2;a.vy=-Math.abs(a.vy)}
+   if(a.y<AH/2){a.y=AH/2;a.vy=Math.abs(a.vy)}
+   let ov=false;
+   for(const r of rects){
+    const hw=AW/2,hh=AH/2;
+    if(a.x+hw>r.l&&a.x-hw<r.r&&a.y+hh>r.t&&a.y-hh<r.b){
+     ov=true;const ox=Math.min(a.x+hw-r.l,r.r-(a.x-hw)),oy=Math.min(a.y+hh-r.t,r.b-(a.y-hh));
+     if(ox<oy){const d=a.x<(r.l+r.r)/2?-1:1;a.x+=d*ox;a.vx=Math.abs(a.vx)*d||d*30}
+     else{const d=a.y<(r.t+r.b)/2?-1:1;a.y+=d*oy;a.vy=Math.abs(a.vy)*d||d*20}}}
+   a.stuck=ov?a.stuck+1:0;
+   if(a.stuck>40){const s=freeSpot();if(s){a.x=s.x;a.y=s.y;a.al=0}a.stuck=0}
+   if(Math.abs(a.vx)<22)a.vx=(a.vx<0?-1:1)*22;
+   a.al=Math.min(1,a.al+dt*1.5);
+  }
+  bx.save();bx.globalAlpha=a.al;bx.translate(a.x,a.y);bx.rotate(Math.sin(t*2+a.ph)*.08);
+  bx.shadowColor=a.c;bx.shadowBlur=16;bx.drawImage(ufoSprite(a.c),-AW/2,-AH/2);bx.restore();
+ }
+ /* projéteis */
+ for(let i=bolts.length-1;i>=0;i--){const b=bolts[i];b.t+=dt/.14;
+  const p=Math.min(1,b.t),q=Math.max(0,p-.3),X=v=>b.ox+(b.x-b.ox)*v,Y=v=>b.oy+(b.y-b.oy)*v;
+  fc.save();fc.lineCap='round';fc.shadowColor='#b6ff3b';fc.shadowBlur=14;fc.strokeStyle='#e8ffb0';fc.lineWidth=4;
+  fc.beginPath();fc.moveTo(X(q),Y(q));fc.lineTo(X(p),Y(p));fc.stroke();fc.restore();
+  if(b.t>=1){
+   if(b.tgt){const k=aliens.indexOf(b.tgt);if(k>=0)aliens.splice(k,1);explode(b.tgt);
+    if(!aliens.length&&!waveTimer){waveTimer=1;unlock('alien');setTimeout(nextWave,1800)}}
+   else for(let j=0;j<8;j++){const an=Math.random()*6.28,s=1+Math.random()*3;parts.push({x:b.x,y:b.y,vx:Math.cos(an)*s,vy:Math.sin(an)*s,l:1,d:.05,g:0,s:3,c:'#b6ff3b'})}
+   bolts.splice(i,1)}}
+ /* anéis */
+ for(let i=rings.length-1;i>=0;i--){const r=rings[i];r.r+=r.g?1.5:4;r.l-=r.g?.08:.045;if(r.l<=0){rings.splice(i,1);continue}
+  fc.globalAlpha=r.l;fc.strokeStyle=r.c;fc.lineWidth=3;fc.beginPath();fc.arc(r.x,r.y,r.r,0,6.28);fc.stroke()}
+ /* partículas */
+ for(let i=parts.length-1;i>=0;i--){const q=parts[i];q.x+=q.vx;q.y+=q.vy;q.vy+=q.g;q.l-=q.d;if(q.l<=0){parts.splice(i,1);continue}
+  fc.globalAlpha=q.l;fc.fillStyle=q.c;fc.fillRect(q.x-q.s/2,q.y-q.s/2,q.s,q.s)}
+ fc.globalAlpha=1;
+ requestAnimationFrame(draw)}
+requestAnimationFrame(draw);
+
+
+/* nome em pixel art */
+(function(){
+ const G={M:['10001','11011','10101','10101','10001','10001','10001'],A:['01110','10001','10001','11111','10001','10001','10001'],T:['11111','00100','00100','00100','00100','00100','00100'],H:['10001','10001','10001','11111','10001','10001','10001'],E:['11111','10000','10000','11110','10000','10000','11111'],U:['10001','10001','10001','10001','10001','10001','01110'],S:['01111','10000','10000','01110','00001','00001','11110'],N:['10001','11001','10101','10101','10011','10001','10001']};
+ const txt='MATHEUS NUNES',sc=Math.max(4,Math.min(9,Math.floor(innerWidth/100)));
+ const cols=[...txt].reduce((w,c)=>w+(c===' '?3:6),0)-1,cv=document.getElementById('namecv'),pad=sc*2;
+ cv.width=cols*sc+pad*2;cv.height=7*sc+pad*2;const x=cv.getContext('2d');
+ const paint=(ox,oy,col)=>{x.fillStyle=col;let cx=0;for(const ch of txt){if(ch===' '){cx+=3;continue}G[ch].forEach((r,y)=>[...r].forEach((b,i)=>{if(b==='1')x.fillRect(pad+(cx+i)*sc+ox,pad+y*sc+oy,sc,sc)}));cx+=6}};
+ paint(sc,sc,'#ff2e97');paint(-sc/2,-sc/2,'#00e5ff');
+ const g=x.createLinearGradient(0,0,cv.width,0);g.addColorStop(0,'#ffffff');g.addColorStop(.5,'#b6ff3b');g.addColorStop(1,'#ffffff');paint(0,0,g);
+})();
+/* ================= SELEÇÃO DE PERSONAGEM (pixel art) ================= */
+const FIX={E:'#1a1a2e',M:'#c4585a',A:'#ff2e97',W:'#1e1b2e',G:'#00e5ff',K:'#b6ff3b'};
+const TPL={
+ m:['....HHHH....','...HHHHHH...','...HSSSSH...','...SSSSSS...','...SESSES...','...SSSSSS...','....SMMS....','..BBBBBBBB..','.SBBBAABBBS.','.SBBBAABBBS.','.SBBBBBBBBS.','..PPPPPPPP..','..PPP..PPP..','..PPP..PPP..','..WWW..WWW..'],
+ f:['....HHHH....','...HHHHHH...','..HHHHHHHH..','..HHSSSSHH..','..HSESSESH..','..HSSSSSSH..','..HHSMMSHH..','..HHBBBBHH..','..HBBBBBBH..','.SBBBBBBBBS.','.SBBBBBBBBS.','..BBBBBBBB..','.BBBBBBBBBB.','...SS..SS...','...SS..SS...','..WWW..WWW..']};
+const CHARS={
+ m:[{n:'Alex',d:'Headset ciano',hair:'#3b2a20',skin:'#f1c9a0',shirt:'#00b7d4',pants:'#2b2d5b',acc:'headset'},
+    {n:'Bruno',d:'Óculos e gravata pink',hair:'#14121f',skin:'#a86b45',shirt:'#8a5cff',pants:'#222244',acc:'glasses'},
+    {n:'Caio',d:'Boné verde-lima',hair:'#c98a2b',skin:'#f6d3b3',shirt:'#ff7a18',pants:'#1d3557',acc:'cap',cap:'#b6ff3b'},
+    {n:'Davi',d:'Executivo clássico',hair:'#7a3b1a',skin:'#6e4327',shirt:'#f4f1ff',pants:'#14121f',acc:'none'}],
+ f:[{n:'Ana',d:'Headset e vestido pink',hair:'#5a2d16',skin:'#f1c9a0',shirt:'#ff2e97',pants:'#000',acc:'headset'},
+    {n:'Bia',d:'Óculos e cabelo loiro',hair:'#e8b94a',skin:'#f6d3b3',shirt:'#00b7d4',pants:'#000',acc:'glasses'},
+    {n:'Clara',d:'Boné laranja',hair:'#14121f',skin:'#a86b45',shirt:'#8a5cff',pants:'#000',acc:'cap',cap:'#ff7a18'},
+    {n:'Duda',d:'Cabelo azul neon',hair:'#00e5ff',skin:'#6e4327',shirt:'#b6ff3b',pants:'#000',acc:'none'}]};
+const TXT={m:{role:'Recrutador',hi:'Bem-vindo',obj:'👾 DESAFIO DO RECRUTADOR',th:'Obrigado por jogar, Recrutador!'},
+           f:{role:'Recrutadora',hi:'Bem-vinda',obj:'👾 DESAFIO DA RECRUTADORA',th:'Obrigada por jogar, Recrutadora!'}};
+function spriteRows(g,o){
+ const rows=TPL[g].map(r=>r.padEnd(12,'.').split(''));
+ if(o.acc==='glasses')rows.forEach((r,i)=>{if(i<7&&r.includes('E'))r.forEach((c,x)=>{if(c==='S')r[x]='G'})});
+ if(o.acc==='cap'){for(let i=0;i<3;i++)rows[i]=rows[i].map(c=>c==='H'?'C':c)}
+ if(o.acc==='headset')[4,5].forEach(i=>{const r=rows[i];const a=r.findIndex(c=>c!=='.'),b=r.length-1-[...r].reverse().findIndex(c=>c!=='.');r[a]='K';r[b]='K'});
+ return rows}
+function drawSprite(cv,g,o,sc){
+ const rows=spriteRows(g,o);cv.width=12*sc;cv.height=rows.length*sc;const x=cv.getContext('2d');x.imageSmoothingEnabled=false;
+ const col={H:o.hair,S:o.skin,B:o.shirt,P:o.pants,C:o.cap||o.hair,...FIX};
+ rows.forEach((r,y)=>r.forEach((c,i)=>{if(c==='.')return;x.fillStyle=col[c];x.fillRect(i*sc,y*sc,sc,sc)}));
+ return cv}
+const sel={g:null,i:null};
+drawSprite($('#pm'),'m',CHARS.m[0],9);drawSprite($('#pf'),'f',CHARS.f[0],9);
+$$('.choice').forEach(b=>b.onclick=()=>{sel.g=b.dataset.g;sel.i=null;$('#startbtn').disabled=true;
+ $('#selsub').textContent=TXT[sel.g].role+', clique em um jogador';
+ $('#chars').innerHTML=CHARS[sel.g].map((o,i)=>`<button class="charcard" data-i="${i}"><canvas class="sprite"></canvas><b>${o.n}</b><small>${o.d}</small></button>`).join('');
+ $$('#chars .charcard').forEach((c,i)=>{drawSprite(c.querySelector('canvas'),sel.g,CHARS[sel.g][i],8);
+  c.onclick=()=>{sel.i=i;$$('#chars .charcard').forEach(x=>x.classList.toggle('sel',x===c));$('#startbtn').disabled=false}});
+ $('#step1').style.display='none';$('#step2').style.display='block'});
+$('#backbtn').onclick=()=>{$('#step2').style.display='none';$('#step1').style.display='block'};
+function openSelect(){$('#select').classList.remove('hide');$('#step2').style.display='none';$('#step1').style.display='block';document.documentElement.classList.add('lock')}
+let started=false;
+$('#startbtn').onclick=()=>{
+ const o=CHARS[sel.g][sel.i],url=drawSprite(document.createElement('canvas'),sel.g,o,5).toDataURL();
+ const av=$('#avatar');av.textContent='';av.classList.add('sprite');av.style.backgroundImage=`url(${url})`;
+ orb.classList.add('sprite');orb.style.backgroundImage=`url(${url})`;
+ $('#pname').textContent=o.n+' · '+TXT[sel.g].role;
+ $('#bosslbl').textContent=TXT[sel.g].obj;$('#thanks').textContent=TXT[sel.g].th;
+ $('#select').classList.add('hide');document.documentElement.classList.remove('lock');
+ scrollTo(0,0);onScroll();burst(innerWidth/2,innerHeight/2,70);
+ toast(`🎮 <b>${TXT[sel.g].hi}, ${o.n}!</b><br>Role a página e clique nas naves para atirar! 🔫`);
+ if(!started){started=true;heroCounts()}};
+$('#avatar').onclick=()=>{if(started)openSelect()};
+history.scrollRestoration='manual';scrollTo(0,0);document.documentElement.classList.add('lock');
+/* ================= TERMINAL ================= */
+const term=$('#term'),tout=$('#tout'),tin=$('#tin');
+const CMD={
+ help:()=>'Comandos: whoami · skills · exp · ia · contato · hire · clear',
+ whoami:()=>'Matheus Nunes Gonçalves\nEngenheiro de Agentes de IA (102h) · IA Designer (12h).\nDomínio em Agentes de IA, Aplicações com IA, Automações e Dados + ~10 anos em operações B2B.',
+ skills:()=>TREE.map(b=>b.t+': '+b.s.map(s=>s[0]).join(', ')).join('\n'),
+ exp:()=>LEVELS.map(l=>`${l.when} · ${l.title} · ${l.role}`).join('\n'),
+ ia:()=>'Formações concluídas: Engenheiro de Agentes de IA (102h) e IA Designer (12h).\nExperiência prática com IA Enterprise na Head Office.ai, automação em escala (+6k msgs/sem) e desenvolvimento do app VagaRadar.',
+ contato:()=>`E-mail: ${EMAIL}\nLinkedIn: linkedin.com/in/matheusnunesgoncalves`,
+ hire:()=>{burst(innerWidth/2,innerHeight/2,150);$('#win').classList.add('show');$('#win').scrollIntoView({behavior:'smooth',block:'center'});return '🚀 Excelente decisão. Veja o final da página.'},
+ clear:()=>{tout.textContent='';return ''},
+ sudo:()=>'Boa tentativa. Mas eu gosto de quem pergunta primeiro 😉'};
+function out(t){if(t)tout.textContent+=t+'\n';tout.scrollTop=1e9}
+out('MN-OS v1.0 · digite "help"');
+$('#tbtn').onclick=()=>{term.classList.toggle('show');tin.focus()};
+addEventListener('keydown',e=>{if(e.key==='`'){term.classList.toggle('show');tin.focus();e.preventDefault()}});
+$('#tform').onsubmit=e=>{e.preventDefault();const v=tin.value.trim().toLowerCase();tin.value='';if(!v)return;out('$ '+v);unlock('hack');
+ const f=CMD[v.split(' ')[0]];out(f?f():`comando não encontrado: ${v}`)};
+</script>
+</body>
+</html>
